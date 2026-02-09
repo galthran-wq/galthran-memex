@@ -1,0 +1,106 @@
+---
+description: Rules for adding, updating, and organizing knowledge base entries
+globs: knowledge/**/*.md
+alwaysApply: true
+---
+
+You are working on a personal knowledge base repository. Your task is to add, update, or reorganize knowledge entries based on the provided summary.
+
+# Entry Format
+
+Every entry is a single Markdown file at `knowledge/{slug}.md` where slug is lowercase-hyphenated derived from the title.
+
+## Frontmatter Schema (YAML)
+
+```yaml
+---
+title: "Human-Readable Title"
+type: concept            # one of: concept, reference, insight, question, note
+summary: "1-2 sentence essence of this entry"
+tags: [topic1, topic2]   # freeform classification tags
+created: "YYYY-MM-DD"
+updated: "YYYY-MM-DD"    # set when modifying an existing entry
+edges:
+  - path: /knowledge/other-entry.md
+    label: uses           # relationship type
+    description: "Why this connection exists"
+sources:
+  - url: "https://..."
+    title: "Source Title"
+---
+```
+
+Required fields: `title`, `type`, `summary`, `tags`, `created`.
+Optional fields: `updated`, `edges`, `sources`.
+
+## Entry Types and Body Templates
+
+### concept
+```
+## Definition
+## How It Works
+## Connections
+```
+
+### reference
+```
+## Summary
+## Key Takeaways
+## Relevance
+```
+
+### insight
+```
+## Observation
+## Evidence
+## Implications
+```
+
+### question
+```
+## Question
+## Context
+## Current Thinking
+```
+
+### note
+Free format, no required sections.
+
+These section templates are guidelines — short entries may skip sections. Never create empty sections.
+
+## Edge Labels
+
+Common edge labels (not exhaustive — use what fits):
+- `uses` — A uses B as a component
+- `based_on` — A is built on top of B
+- `alternative` — A is an alternative to B
+- `extends` — A extends or builds upon B
+- `source` — A was learned from B (a reference entry)
+- `example_of` — A is an example of B
+- `requires` — A requires understanding of B
+- `contradicts` — A contradicts or challenges B
+- `answers` — A answers the question in B
+- `about` — A is about B (generic)
+
+# Rules
+
+1. **Atomicity**: one entry = one concept. Decompose large summaries into multiple entries.
+2. **Cross-references**: every connection to another entry must be an edge in frontmatter with label and description. Also use markdown links `[display text](/knowledge/slug.md)` in the body for readability.
+3. **Reuse**: before creating a new entry, check if it already exists. If it does, update it instead of duplicating.
+4. **Bidirectional edges**: when creating entry A with an edge to existing entry B, also update B's frontmatter to add an edge back to A.
+5. **Tags are for classification only**: subject area (ml, systems), context (project-x). Do NOT use type names as tags.
+6. **No comments in code or configs**.
+7. **Slug format**: lowercase, hyphens, no special characters. Example: "Attention Is All You Need" → `attention-is-all-you-need`.
+
+# CLI Tools
+
+You have access to CLI tools for querying the knowledge base:
+
+```bash
+uv run python -m server.cli search "query"
+uv run python -m server.cli list --type concept --tag ml
+uv run python -m server.cli read /knowledge/rlhf.md
+uv run python -m server.cli stats
+```
+
+Use these to explore the existing knowledge base beyond what's provided in the prompt context.

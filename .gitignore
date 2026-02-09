@@ -1,0 +1,9 @@
+.env
+.memex/
+__pycache__/
+*.pyc
+.venv/
+dist/
+*.egg-info/
+viewer/data.json
+viewer/_site/
