@@ -3,9 +3,9 @@ server:
   port: 8787
 
 github:
-  owner: ""
-  repo: ""
-  default_branch: "main"
+  owner: "galthran-wq"
+  repo: "galthran-memex"
+  default_branch: "master"
 
 knowledge:
   root_dir: "knowledge"
