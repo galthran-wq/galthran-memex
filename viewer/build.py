@@ -12,7 +12,7 @@ from server.kb import parse_entry
 
 try:
     import mistune
-    _md = mistune.create_markdown()
+    _md = mistune.create_markdown(plugins=['math'])
 except ImportError:
     _md = None
 

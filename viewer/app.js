@@ -149,6 +149,17 @@ function showDetail(path) {
       ${backlinksHtml}
     </div>
   `;
+
+  if (typeof renderMathInElement === "function") {
+    renderMathInElement(panel.querySelector(".detail-body"), {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "\\[", right: "\\]", display: true },
+      ],
+      throwOnError: false,
+    });
+  }
 }
 
 const TYPE_COLORS = {
