@@ -9,6 +9,7 @@ github:
 
 knowledge:
   root_dir: "knowledge"
+  assets_dir: "knowledge/assets"
   types: [concept, reference, insight, question, note]
   recommended_tags: [ml, systems, math, programming]
 

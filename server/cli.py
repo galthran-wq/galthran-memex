@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import argparse
-import json
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+
+import httpx
 
 from server.config import load_config
+from server.github_client import GitHubClient, GitHubClientError, IMAGE_EXTENSIONS
 from server.kb import KnowledgeBase
 
 
@@ -98,6 +100,63 @@ def cmd_stats(args: argparse.Namespace) -> None:
         print(f"  {t}: {c}")
 
 
+def cmd_upload(args: argparse.Namespace) -> None:
+    config = load_config()
+    if not config.memex_git_token:
+        print("Error: MEMEX_GIT_TOKEN not configured", file=sys.stderr)
+        sys.exit(1)
+    if not config.github.owner or not config.github.repo:
+        print("Error: GitHub repository not configured in config.yaml", file=sys.stderr)
+        sys.exit(1)
+
+    branch = args.branch or config.github.default_branch
+
+    gh = GitHubClient(config.memex_git_token, config.github.owner, config.github.repo)
+    try:
+        if args.branch:
+            gh.ensure_branch(branch, config.github.default_branch)
+
+        for source in args.sources:
+            is_url = source.startswith("http://") or source.startswith("https://")
+
+            if is_url:
+                filename = PurePosixPath(source.split("?")[0]).name
+            else:
+                filename = Path(source).name
+
+            ext = PurePosixPath(filename).suffix.lower()
+            if ext not in IMAGE_EXTENSIONS:
+                print(
+                    f"Skipping {filename}: unsupported type '{ext}'",
+                    file=sys.stderr,
+                )
+                continue
+
+            if is_url:
+                try:
+                    resp = httpx.get(source, timeout=30, follow_redirects=True)
+                    resp.raise_for_status()
+                    content = resp.content
+                except httpx.HTTPError as e:
+                    print(f"Error fetching {source}: {e}", file=sys.stderr)
+                    continue
+            else:
+                p = Path(source).expanduser().resolve()
+                if not p.exists():
+                    print(f"File not found: {source}", file=sys.stderr)
+                    continue
+                content = p.read_bytes()
+
+            repo_path = f"{config.knowledge.assets_dir}/{filename}"
+            result = gh.upload_file(repo_path, content, branch)
+            print(f"Uploaded: /{result.path}  (branch: {result.branch})")
+    except GitHubClientError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+    finally:
+        gh.close()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(prog="memex-cli")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -118,6 +177,11 @@ def main() -> None:
 
     p_stats = sub.add_parser("stats")
     p_stats.set_defaults(func=cmd_stats)
+
+    p_upload = sub.add_parser("upload")
+    p_upload.add_argument("sources", nargs="+")
+    p_upload.add_argument("--branch", default=None)
+    p_upload.set_defaults(func=cmd_upload)
 
     args = parser.parse_args()
     args.func(args)

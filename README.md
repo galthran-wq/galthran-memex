@@ -2,6 +2,8 @@
 
 Personal knowledge base as a GitHub template. An MCP server gives AI agents tools to search, read, and add knowledge. Writes go through [Cursor Cloud Agents](https://cursor.com/docs/cloud-agent) — a cloud agent reads your `.cursor/rules/`, creates properly formatted entries with cross-references, and opens a PR for you to review.
 
+![Memex Architecture](docs/memex-architecture.png)
+
 ## How It Works
 
 ```

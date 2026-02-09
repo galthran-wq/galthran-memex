@@ -82,6 +82,16 @@ Common edge labels (not exhaustive — use what fits):
 - `answers` — A answers the question in B
 - `about` — A is about B (generic)
 
+# Images
+
+Images live in `knowledge/assets/`. Reference them in entry bodies with standard markdown:
+
+```
+![Figure description](/knowledge/assets/filename.png)
+```
+
+Images are uploaded via the `kb_upload` tool (MCP) or `upload` CLI command before creating entries. When images are available on a branch, they will be listed in the prompt — use them in relevant entries where they add value (diagrams, figures from papers, etc.).
+
 # Rules
 
 1. **Atomicity**: one entry = one concept. Decompose large summaries into multiple entries.
