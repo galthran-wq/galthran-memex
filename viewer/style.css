@@ -193,6 +193,14 @@ nav button.active {
   line-height: 1.7;
 }
 
+.detail-body img {
+  width: 70%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 12px auto;
+}
+
 .detail-body h2 { font-size: 18px; margin: 20px 0 8px; font-weight: 600; }
 .detail-body p { margin-bottom: 12px; }
 .detail-body ul, .detail-body ol { margin: 8px 0 12px 24px; }
@@ -200,6 +208,12 @@ nav button.active {
 .detail-body .math { overflow-x: auto; }
 .detail-body .katex-display { margin: 16px 0; }
 .detail-body .katex { font-size: 1.1em; }
+
+@media (max-width: 768px) {
+  .detail-body img {
+    width: 100%;
+  }
+}
 
 .connections {
   margin-top: 24px;
