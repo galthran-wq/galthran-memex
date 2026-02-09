@@ -4,6 +4,7 @@ type: reference
 summary: "A contrastive image-text pretraining method (Radford et al., 2021) that learns a shared embedding space for images and natural-language descriptions, enabling strong zero-shot transfer via prompting."
 tags: [ml, vision, multimodal, paper]
 created: "2026-02-09"
+updated: "2026-02-09"
 edges:
   - path: /knowledge/contrastive-image-text-pretraining.md
     label: about
@@ -11,18 +12,6 @@ edges:
   - path: /knowledge/infonce-contrastive-objective.md
     label: uses
     description: "CLIP trains with a symmetric in-batch contrastive objective (InfoNCE-style)."
-  - path: /knowledge/zero-shot-image-classification-with-text-prompts.md
-    label: about
-    description: "CLIP’s shared embeddings make prompt-based zero-shot classification a standard inference interface."
-  - path: /knowledge/prompt-ensembling.md
-    label: uses
-    description: "CLIP accuracy is sensitive to prompt choice; ensembling prompts boosts performance."
-  - path: /knowledge/clip-robustness-under-natural-distribution-shift.md
-    label: about
-    description: "The paper reports reduced robustness gaps on natural distribution shifts for zero-shot CLIP."
-  - path: /knowledge/clip-scaling-behavior.md
-    label: about
-    description: "CLIP exhibits smooth scaling behavior of average zero-shot error vs compute."
 sources:
   - url: "https://arxiv.org/abs/2103.00020"
     title: "Learning Transferable Visual Models From Natural Language Supervision"
@@ -42,6 +31,27 @@ CLIP trains an image encoder and a text encoder jointly on a large set of (image
 - The training objective is an efficient in-batch contrastive loss over all image-text pairs in a batch (symmetric cross-entropy).
 - Zero-shot accuracy depends meaningfully on prompt wording; prompt ensembling can improve results.
 - Zero-shot CLIP can reduce the gap between ImageNet performance and performance under natural distribution shifts (relative to standard supervised baselines), while fine-tuning on ImageNet can trade off robustness for in-distribution accuracy.
+
+## How Zero-Shot Classification Works
+
+To classify an image into a set of classes, CLIP turns each label into one or more natural-language prompts (for example, “a photo of a {label}”). The text encoder embeds each prompt; these prompt embeddings behave like class weight vectors in the shared embedding space. The image encoder embeds the input image, and the predicted class is the prompt (or class) with highest cosine similarity to the image embedding.
+
+### Prompting and prompt ensembling
+
+Prompt choice matters. A simple way to reduce prompt sensitivity is to use multiple prompts per class and combine them:
+
+- **Average logits**: compute a similarity score for each prompt and average the scores for prompts that correspond to the same class.
+- **Average embeddings**: average the text embeddings for a class’s prompts, re-normalize, and score with the image embedding.
+
+## Robustness Under Natural Distribution Shift
+
+Radford et al. report that zero-shot CLIP tends to retain accuracy better under several natural distribution shifts (for example, sketches and renditions), reducing the usual gap between ImageNet and shifted ImageNet variants compared to standard supervised baselines. They also note that adapting/fine-tuning to ImageNet can increase ImageNet accuracy without necessarily improving average robustness across their shift suite.
+
+![Robustness under natural distribution shift](/knowledge/assets/figure_13.png)
+
+## Scaling Behavior
+
+Across training runs at different compute/model scales, average zero-shot error follows a smooth log-log linear trend (scaling-law-like behavior). The paper extrapolates that very large additional compute would be required for zero-shot performance to reach the best overall results across their evaluation suite.
 
 ## Relevance
 

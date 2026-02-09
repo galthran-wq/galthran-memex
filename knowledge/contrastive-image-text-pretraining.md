@@ -11,9 +11,6 @@ edges:
   - path: /knowledge/infonce-contrastive-objective.md
     label: uses
     description: "A common training recipe is an InfoNCE-style in-batch contrastive objective."
-  - path: /knowledge/zero-shot-image-classification-with-text-prompts.md
-    label: uses
-    description: "A shared embedding space enables prompt-based zero-shot classification."
 sources:
   - url: "https://arxiv.org/abs/2103.00020"
     title: "Learning Transferable Visual Models From Natural Language Supervision"
@@ -33,4 +30,4 @@ Contrastive image-text pretraining learns an embedding space where images and th
 
 - [CLIP](/knowledge/clip.md) is a widely used instance of this approach.
 - Training is often expressed via an [InfoNCE-style contrastive objective](/knowledge/infonce-contrastive-objective.md).
-- The shared space supports [zero-shot classification via text prompts](/knowledge/zero-shot-image-classification-with-text-prompts.md).
+- The shared space supports prompt-based zero-shot classification (see [CLIP](/knowledge/clip.md)).

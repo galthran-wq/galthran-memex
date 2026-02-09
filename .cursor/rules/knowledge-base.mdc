@@ -94,7 +94,7 @@ Images are uploaded via the `kb_upload` tool (MCP) or `upload` CLI command befor
 
 # Rules
 
-1. **Atomicity**: one entry = one concept. Decompose large summaries into multiple entries.
+1. **Atomicity (practical)**: one entry = one concept, but only split when it improves reuse and maintainability. As a rule of thumb, split into a separate entry only if you are confident the concept is general and likely to be reused across multiple future entries; otherwise, keep paper-specific findings (for example, “robustness results of paper X”) inside the main paper entry.
 2. **Cross-references**: every connection to another entry must be an edge in frontmatter with label and description. Also use markdown links `[display text](/knowledge/slug.md)` in the body for readability.
 3. **Reuse**: before creating a new entry, check if it already exists. If it does, update it instead of duplicating.
 4. **Bidirectional edges**: when creating entry A with an edge to existing entry B, also update B's frontmatter to add an edge back to A.
