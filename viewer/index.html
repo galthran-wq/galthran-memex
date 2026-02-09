@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memex — Knowledge Base</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Memex</h1>
+      <span class="stats" id="stats"></span>
+      <nav>
+        <button class="active" data-view="list" onclick="showView('list'); renderList();">List</button>
+        <button data-view="graph" onclick="showView('graph');">Graph</button>
+        <button data-view="detail" onclick="" style="display:none;" id="detail-tab">Detail</button>
+      </nav>
+    </header>
+
+    <div class="view active" id="view-list">
+      <div class="search-bar">
+        <input type="text" id="search" placeholder="Search entries...">
+      </div>
+      <div class="filters">
+        <select id="filter-type">
+          <option value="">All types</option>
+        </select>
+        <select id="filter-tag">
+          <option value="">All tags</option>
+        </select>
+      </div>
+      <div class="entry-list" id="entry-list"></div>
+    </div>
+
+    <div class="view" id="view-graph">
+      <div id="graph-container"></div>
+    </div>
+
+    <div class="view" id="view-detail">
+      <div class="detail-panel" id="detail-content"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
