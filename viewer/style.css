@@ -197,6 +197,9 @@ nav button.active {
 .detail-body p { margin-bottom: 12px; }
 .detail-body ul, .detail-body ol { margin: 8px 0 12px 24px; }
 .detail-body code { background: var(--bg); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+.detail-body .math { overflow-x: auto; }
+.detail-body .katex-display { margin: 16px 0; }
+.detail-body .katex { font-size: 1.1em; }
 
 .connections {
   margin-top: 24px;
