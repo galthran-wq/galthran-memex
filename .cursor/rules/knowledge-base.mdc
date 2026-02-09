@@ -91,6 +91,7 @@ Common edge labels (not exhaustive — use what fits):
 5. **Tags are for classification only**: subject area (ml, systems), context (project-x). Do NOT use type names as tags.
 6. **No comments in code or configs**.
 7. **Slug format**: lowercase, hyphens, no special characters. Example: "Attention Is All You Need" → `attention-is-all-you-need`.
+8. **LaTeX for formulas**: use LaTeX notation for mathematical formulas. Inline math uses `$...$`, display math uses `$$...$$`.
 
 # CLI Tools
 
