@@ -37,6 +37,10 @@ jobs:
           cp viewer/style.css _site/
           cp viewer/app.js _site/
           cp viewer/data.json _site/
+          if [ -d knowledge/assets ]; then
+            mkdir -p _site/knowledge
+            cp -r knowledge/assets _site/knowledge/assets
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+from pathlib import Path, PurePosixPath
+
+import httpx
 from mcp.server.fastmcp import FastMCP
 
 from server.config import Config
 from server.cursor_client import CursorClient, CursorClientError
+from server.github_client import GitHubClient, GitHubClientError
 from server.kb import KnowledgeBase
 from server.prompt import build_prompt
+
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}
 
 
 def register_tools(mcp: FastMCP, kb: KnowledgeBase, config: Config) -> None:
@@ -98,13 +104,76 @@ def register_tools(mcp: FastMCP, kb: KnowledgeBase, config: Config) -> None:
 
     @mcp.tool(
         description=(
+            "Upload an image to the knowledge base assets on GitHub. "
+            "Accepts a local file path or a URL as the source. "
+            "Local file paths require the MCP server to run on the same "
+            "machine (local/stdio transport). URLs work regardless of "
+            "server location. "
+            "Optionally specify a branch — if omitted, pushes to the "
+            "default branch. Returns the repo-relative path for use in "
+            "markdown entries: ![alt](/knowledge/assets/filename.png)"
+        )
+    )
+    def kb_upload(source: str, branch: str | None = None) -> str:
+        if not config.memex_git_token:
+            return "Error: MEMEX_GIT_TOKEN not configured"
+        if not config.github.owner or not config.github.repo:
+            return "Error: GitHub repository not configured in config.yaml"
+
+        is_url = source.startswith("http://") or source.startswith("https://")
+
+        if is_url:
+            filename = PurePosixPath(source.split("?")[0]).name
+        else:
+            filename = Path(source).name
+
+        ext = PurePosixPath(filename).suffix.lower()
+        if ext not in IMAGE_EXTENSIONS:
+            return f"Error: Unsupported image type '{ext}'. Supported: {', '.join(sorted(IMAGE_EXTENSIONS))}"
+
+        if is_url:
+            try:
+                resp = httpx.get(source, timeout=30, follow_redirects=True)
+                resp.raise_for_status()
+                content = resp.content
+            except httpx.HTTPError as e:
+                return f"Error: Failed to fetch URL: {e}"
+        else:
+            p = Path(source).expanduser().resolve()
+            if not p.exists():
+                return f"Error: File not found: {source}"
+            content = p.read_bytes()
+
+        target_branch = branch or config.github.default_branch
+        repo_path = f"{config.knowledge.assets_dir}/{filename}"
+
+        gh = GitHubClient(config.memex_git_token, config.github.owner, config.github.repo)
+        try:
+            if branch:
+                gh.ensure_branch(branch, config.github.default_branch)
+            result = gh.upload_file(repo_path, content, target_branch)
+        except GitHubClientError as e:
+            return f"Error: {e}"
+        finally:
+            gh.close()
+
+        return (
+            f"Uploaded: /{result.path}\n"
+            f"Branch: {result.branch}\n"
+            f"Use in entries: ![alt](/{result.path})"
+        )
+
+    @mcp.tool(
+        description=(
             "Add knowledge to the base. Pass a natural language summary — "
             "concepts, insights, references, questions. A cloud agent will "
             "decompose it into atomic entries, create cross-references, "
-            "and open a PR. Returns agent ID for status tracking."
+            "and open a PR. Returns agent ID for status tracking. "
+            "Optionally specify a branch to base the agent on (e.g. one "
+            "where images were uploaded via kb_upload)."
         )
     )
-    def kb_add(summary: str) -> str:
+    def kb_add(summary: str, branch: str | None = None) -> str:
         if not summary or not summary.strip():
             return "Error: Summary cannot be empty"
         if not config.cursor_api_key:
@@ -112,7 +181,21 @@ def register_tools(mcp: FastMCP, kb: KnowledgeBase, config: Config) -> None:
         if not config.github.owner or not config.github.repo:
             return "Error: GitHub repository not configured in config.yaml"
 
-        prompt_text = build_prompt(summary.strip(), kb)
+        target_branch = branch or config.github.default_branch
+
+        images: list[str] = []
+        if branch and config.memex_git_token:
+            gh = GitHubClient(
+                config.memex_git_token, config.github.owner, config.github.repo
+            )
+            try:
+                images = gh.list_directory(config.knowledge.assets_dir, branch)
+            except GitHubClientError:
+                pass
+            finally:
+                gh.close()
+
+        prompt_text = build_prompt(summary.strip(), kb, images=images)
         repo_url = f"https://github.com/{config.github.owner}/{config.github.repo}"
 
         client = CursorClient(config.cursor_api_key)
@@ -120,7 +203,7 @@ def register_tools(mcp: FastMCP, kb: KnowledgeBase, config: Config) -> None:
             result = client.launch_agent(
                 prompt=prompt_text,
                 repository=repo_url,
-                ref=config.github.default_branch,
+                ref=target_branch,
             )
         except CursorClientError as e:
             return f"Error: {e}"
