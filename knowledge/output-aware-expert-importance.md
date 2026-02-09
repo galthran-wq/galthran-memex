@@ -25,26 +25,21 @@ Output-Aware Expert Importance is a scoring method for ranking experts in MoE mo
 The method computes expert importance in a single forward pass (no backpropagation):
 
 **Step 1: Expert Contribution Score**
-```
-c_{i,t} = g_{i,t} * ||e_{i,t}||
-```
-Where:
-- `g_{i,t}` = gating value (router weight) for expert i on token t
-- `||e_{i,t}||` = L2 norm of expert i's output for token t
+
+$$c_{i,t} = g_{i,t} \cdot \|e_{i,t}\|$$
+
+Where $g_{i,t}$ is the gating value (router weight) for expert $i$ on token $t$, and $\|e_{i,t}\|$ is the L2 norm of expert $i$'s output for token $t$.
 
 **Step 2: Token Contribution Estimation**
-```
-s_t = 1 - cosine_sim(h_t, h_tilde_t)
-```
-Where:
-- `h_t` = hidden state after MoE layer
-- `h_tilde_t` = hidden state before MoE layer
-- Measures how much the MoE layer changes the representation
+
+$$s_t = 1 - \cos(h_t, \tilde{h}_t)$$
+
+Where $h_t$ is the hidden state after the MoE layer and $\tilde{h}_t$ is the hidden state before. This measures how much the MoE layer changes the representation.
 
 **Step 3: Final Expert Score**
-```
-I(E_i) = sum_t(c_{i,t} * s_t)
-```
+
+$$I(E_i) = \sum_t c_{i,t} \cdot s_t$$
+
 Aggregates across all tokens, weighting by how influential each token's MoE transformation is.
 
 ## Connections
