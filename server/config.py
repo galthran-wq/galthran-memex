@@ -24,6 +24,7 @@ class GitHubConfig:
 @dataclass
 class KnowledgeConfig:
     root_dir: str = "knowledge"
+    assets_dir: str = "knowledge/assets"
     types: list[str] = field(
         default_factory=lambda: ["concept", "reference", "insight", "question", "note"]
     )
@@ -97,6 +98,7 @@ def load_config(config_path: Path | None = None, repo_root: Path | None = None) 
         ),
         knowledge=KnowledgeConfig(
             root_dir=knowledge_raw.get("root_dir", "knowledge"),
+            assets_dir=knowledge_raw.get("assets_dir", "knowledge/assets"),
             types=knowledge_raw.get(
                 "types", ["concept", "reference", "insight", "question", "note"]
             ),

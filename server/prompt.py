@@ -3,7 +3,11 @@ from __future__ import annotations
 from server.kb import KnowledgeBase
 
 
-def build_prompt(summary: str, kb: KnowledgeBase) -> str:
+def build_prompt(
+    summary: str,
+    kb: KnowledgeBase,
+    images: list[str] | None = None,
+) -> str:
     parts: list[str] = []
 
     parts.append("You are adding knowledge to a personal knowledge base.\n")
@@ -48,6 +52,16 @@ def build_prompt(summary: str, kb: KnowledgeBase) -> str:
                 parts.append(f"{e.path} | {e.title} | {e.type} | {tags} | {e.summary}")
         parts.append("")
 
+    if images:
+        parts.append("## Available Images\n")
+        parts.append(
+            "These images have been uploaded and are available for use in entries. "
+            "Reference them with markdown image syntax: `![alt text](/path)`"
+        )
+        for img in images:
+            parts.append(f"- /{img}")
+        parts.append("")
+
     parts.append("## Instructions\n")
     parts.append("- Read .cursor/rules/ for entry format and conventions")
     parts.append("- Decompose the knowledge above into atomic entries (one concept per file)")
@@ -60,6 +74,11 @@ def build_prompt(summary: str, kb: KnowledgeBase) -> str:
         "`uv run python -m server.cli list --type concept`, "
         "`uv run python -m server.cli read /knowledge/slug.md`"
     )
+    if images:
+        parts.append(
+            "- Use the available images in relevant entries where they add value "
+            "(e.g. architecture diagrams, figures from papers)"
+        )
     parts.append("- Open a PR with all changes")
 
     return "\n".join(parts)
