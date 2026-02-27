@@ -7,4 +7,3 @@ dist/
 *.egg-info/
 viewer/data.json
 viewer/_site/
-workspace
