@@ -41,7 +41,7 @@ uv run python viewer/build.py   # Build data.json from knowledge entries
 - **Assets**: Images in `knowledge/assets/`, referenced as `![alt](/knowledge/assets/file.png)`
 
 ### Entry Structure
-YAML frontmatter with `title`, `type`, `summary`, `tags`, `created`, `edges`, `sources`, followed by markdown body with section templates per type (see `.cursor/rules/knowledge-base.mdc:36-68`).
+YAML frontmatter with `title`, `type`, `summary`, `tags`, `created`, `edges`, `sources`, followed by markdown body. Structure is flexible — organize sections based on what serves the content best.
 
 ### Server Components
 - `server/main.py` - FastMCP server setup, repo cloning for remote deployment
@@ -85,6 +85,24 @@ Set environment variables:
 - `MEMEX_AUTH_TOKEN` - Bearer token for MCP endpoint auth
 - `CURSOR_API_KEY` - For kb_add (Cloud Agents API)
 - `OPENAI_API_KEY` - For semantic search (optional)
+
+## User Preferences
+
+**Writing style**: Entries should be succinct, to-the-point, and formal. Prefer mathematical formulations and technical precision over verbose explanations.
+
+**For papers**: Focus on algorithms, figures, and mathematical content. Extract formal definitions, theorems, and key equations. Keep prose minimal.
+
+**For concepts**: Lead with formal definitions using math notation when applicable. Use equations to capture relationships.
+
+## Study Session Protocol
+
+When reading and presenting material with the user:
+
+1. **Assume expert level**: User is knowledgeable. Be succinct. No verbose explanations unless requested. Prefer math, pseudo-code, formal arguments.
+2. **Presentation plan first**: Before diving into new material, create a plan for how to present it. Understand what's important vs. what's not.
+3. **Systematic progression**: For papers, go section-by-section. Do not rush ahead.
+4. **Note connections**: Briefly note backward links (to existing KB entries) and forward links (to material not yet covered).
+5. **Assume user hasn't read the source**: You're the guide, present the best possible introduction to the subject.
 
 ## Key Rules from .cursor/rules/knowledge-base.mdc
 

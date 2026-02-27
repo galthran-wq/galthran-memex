@@ -33,40 +33,41 @@ sources:
 Required fields: `title`, `type`, `summary`, `tags`, `created`.
 Optional fields: `updated`, `edges`, `sources`.
 
-## Entry Types and Body Templates
+## Entry Types
 
-### concept
-```
-## Definition
-## How It Works
-## Connections
-```
+Entries are tagged with a type for classification:
+- **concept** — fundamental ideas, techniques, methods
+- **reference** — papers, articles, external sources
+- **insight** — observations, realizations, connections discovered
+- **question** — open questions, things to explore
+- **note** — everything else
 
-### reference
-```
-## Summary
-## Key Takeaways
-## Relevance
-```
+The body structure is flexible. Organize content in whatever way best serves the material — use sections that make sense for the specific entry. Never create empty sections.
 
-### insight
-```
-## Observation
-## Evidence
-## Implications
-```
+## Writing Style
 
-### question
-```
-## Question
-## Context
-## Current Thinking
-```
+Entries should be **succinct, to-the-point, and formal**. Prefer mathematical formulations and technical precision over verbose explanations.
 
-### note
-Free format, no required sections.
+For papers (type: reference):
+- Prioritize **algorithms** (use LaTeX for pseudocode or equation form)
+- Include **figures** when available (use images from `knowledge/assets/`)
+- Extract **mathematical formulations** (definitions, theorems, key equations)
+- Keep prose minimal — focus on what can be expressed formally
 
-These section templates are guidelines — short entries may skip sections. Never create empty sections.
+For concepts:
+- Lead with formal definitions using math notation when applicable
+- Use equations to capture relationships
+- Keep explanatory text concise
+
+## Presenting Material to User
+
+When reading papers or textbooks with the user, follow these guidelines:
+
+1. **Expert-level discourse**: User is knowledgeable. Be succinct, formal. Prefer math/pseudo-code over prose.
+2. **Presentation plan first**: Before diving in, determine what's important and how to structure the presentation.
+3. **Systematic progression**: Go section-by-section for papers. Don't rush ahead.
+4. **Note connections**: Briefly indicate backward links (what's already in KB) and forward links (material not yet covered).
+5. **Assume user hasn't read the source**: Present the material as the best possible guide.
 
 ## Edge Labels
 
